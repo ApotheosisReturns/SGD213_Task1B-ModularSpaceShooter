@@ -1,26 +1,29 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class PlayerMovementScript : MonoBehaviour {
-            // SerializeField exposes this value to the Editor, but not to other Scripts!
-            // It is "pseudo public"
-            // HorizontalPlayerAcceleration indicates how fast we accelerate Horizontally
-            [SerializeField]
-            private float f_horPlayAccel = 5000f;
+public class PlayerMovementScript : MonoBehaviour
+{
+    [SerializeField] private float horizontalAcceleration = 5000f; // determines the target speed 
 
-            private Rigidbody2D OURRigidbody;
+    private Rigidbody2D rb;
+    private float input;
 
-    // Use this for initialization
-    void Start() {
-        // Get OurRigidbodyComponent once at the start of the game and store a reference to it
-        // This means that we don't need to call GetComponent more than once! This makes our game faster. (GetComponent is SLOW)
-        OURRigidbody = GetComponent<Rigidbody2D>(); }
-    // Update is called once per frame
-    void Update() {
-        float HorizontalInput = Input.GetAxis("Horizontal");
+    private void Awake() // Get/Use attached rigidbody
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
 
-        if (HorizontalInput != 0.0f) {
-            Vector2 ForceToAdd=Vector2.right*HorizontalInput*f_horPlayAccel*Time.deltaTime;
-            OURRigidbody.AddForce(ForceToAdd);
-            //print(HorizontalInput);
-        } } }
+    private void Update()
+    {
+        // Always read input in Update
+        input = Input.GetAxis("Horizontal");
+    }
+
+    private void FixedUpdate()
+    {
+        if (Mathf.Abs(input) > 0.01f)
+        {
+            Vector2 force = Vector2.right * input * horizontalAcceleration * Time.fixedDeltaTime;
+            rb.AddForce(force);
+        }
+    }
+}
